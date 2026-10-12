@@ -1,0 +1,79 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    // Sets default integrated terminal working directory
+    "terminal.integrated.cwd": "",
+
+    // Use inside custom terminal profiles
+    "terminal.integrated.profiles.linux": {
+        "Workspace GNU Bash": {
+            "path": "/usr/bin/env",
+            "args": [
+                "bash",
+                "-c",
+                "CODE_DIR=$(dirname \"$(find \"$(dirname \"$VSCODE_GIT_ASKPASS_NODE\")\" -type f -name \"code\" 2>/dev/null | head -n 1)\"); [ -n \"$CODE_DIR\" ] && export PATH=\"$PATH:$CODE_DIR\"; exec bash"
+            ],
+            "icon": "terminal-bash",
+            "env": {
+                "WORKSPACE_ROOT": "${workspaceFolder}",
+                "GOPATH": "${workspaceFolder}/.apps/go",
+                "GOBIN": "${workspaceFolder}/.apps/go/bin",
+                "GOTMPDIR": "${workspaceFolder}/.temp",
+                "TEMP": "${workspaceFolder}/.temp",
+                "TEMPDIR": "${workspaceFolder}/.temp",
+                "TMP": "${workspaceFolder}/.temp",
+                "TMPDIR": "${workspaceFolder}/.temp",
+                "PATH": "${workspaceFolder}/.apps/bin:${workspaceFolder}/.apps/go/bin:${env:PATH}",
+            }
+        },
+        "Workspace PowerShell": {
+            
+            "path": "/usr/bin/env",
+            "args": [
+                "pwsh",
+                "-NoExit",
+                "-Command",
+                "$env:PATH += ':' + $($env:VSCODE_GIT_ASKPASS_NODE | Split-Path -Parent | Get-ChildItem -Filter \"code\" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 | Split-Path -Parent)"
+            ],
+            "icon": "terminal-powershell",
+            "env": {
+                "WORKSPACE_ROOT": "${workspaceFolder}",
+                "GOPATH": "${workspaceFolder}/.apps/go",
+                "GOBIN": "${workspaceFolder}/.apps/go/bin",
+                "GOTMPDIR": "${workspaceFolder}/.temp",
+                "TEMP": "${workspaceFolder}/.temp",
+                "TEMPDIR": "${workspaceFolder}/.temp",
+                "TMP": "${workspaceFolder}/.temp",
+                "TMPDIR": "${workspaceFolder}/.temp",
+                "PATH": "${workspaceFolder}/.apps/bin:${workspaceFolder}/.apps/go/bin:${env:PATH}",
+            }
+        },
+    },
+    "terminal.integrated.automationProfile.linux": {
+        "path": "/usr/bin/env",
+        "args": [
+            "bash",
+        ],
+        "env": {
+            "WORKSPACE_ROOT": "${workspaceFolder}",
+            "GOPATH": "${workspaceFolder}/.apps/go",
+            "GOBIN": "${workspaceFolder}/.apps/go/bin",
+            "GOTMPDIR": "${workspaceFolder}/.temp",
+            "TEMP": "${workspaceFolder}/.temp",
+            "TEMPDIR": "${workspaceFolder}/.temp",
+            "TMP": "${workspaceFolder}/.temp",
+            "TMPDIR": "${workspaceFolder}/.temp",},
+            "PATH": "${workspaceFolder}/.apps/bin:${workspaceFolder}/.apps/go/bin:${env:PATH}",
+    },
+    "terminal.integrated.defaultProfile.linux": "Workspace PowerShell",
+    "go.gopath": "",
+    "go.inferGopath": true,
+    "go.testEnvVars": {},
+    "gopls": {
+        "build.env": {},
+        "build.directoryFilters": [
+            "-/.temp",
+            "+/product/code/go/eaets.mui.api_server/production"
+        ],
+        "build.expandWorkspaceToModule": true
+    },
+}

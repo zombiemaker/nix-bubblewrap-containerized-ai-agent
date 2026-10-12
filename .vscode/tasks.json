@@ -1,0 +1,13 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Init Nix Shell",
+            "type": "shell",
+            "command": "nix develop .#latest.shells.x86_64.linux.gnu_libc.pwsh_pixi_go",
+            "problemMatcher": []
+        }
+    ]
+}
