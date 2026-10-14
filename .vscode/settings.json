@@ -30,6 +30,7 @@
             "path": "/usr/bin/env",
             "args": [
                 "pwsh",
+                "-NoProfile",
                 "-NoExit",
                 "-Command",
                 "$env:PATH += ':' + $($env:VSCODE_GIT_ASKPASS_NODE | Split-Path -Parent | Get-ChildItem -Filter \"code\" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 | Split-Path -Parent)"
