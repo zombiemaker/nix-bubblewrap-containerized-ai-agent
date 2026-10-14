@@ -95,11 +95,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1791943763,
-        "narHash": "sha256-WAKMMxVPo0+ubcVk/tOxQihOSdrGvFI0dehiH2RtQf0=",
+        "lastModified": 1792003647,
+        "narHash": "sha256-MXBQv9ZvyWND9ZdfWNVp4LSXyq9/Vw2Y6kHQjBNV1yI=",
         "owner": "zombiemaker",
         "repo": "nix-zm_opencode",
-        "rev": "473841973adfb634d6a18d876a91b613e9dea80a",
+        "rev": "d166c1a2d672766e77f9b51ff060c63c99bebc2c",
         "type": "github"
       },
       "original": {
