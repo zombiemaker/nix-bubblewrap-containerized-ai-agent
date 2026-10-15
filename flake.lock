@@ -48,51 +48,16 @@
         "type": "github"
       }
     },
-    "nixpkgs_4": {
-      "locked": {
-        "lastModified": 1780145889,
-        "narHash": "sha256-md0zn0RnwNvPyASas1yG5YUuwQ4ALA6ucL50l0DvqCo=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "8c50a710ddca43d7a530fb805ad55bde8d0141c5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "26.05",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "nixpkgs": "nixpkgs",
-        "zm_go_repo": "zm_go_repo",
         "zm_opencode_repo": "zm_opencode_repo",
         "zm_pixi_repo": "zm_pixi_repo"
       }
     },
-    "zm_go_repo": {
-      "inputs": {
-        "nixpkgs": "nixpkgs_2"
-      },
-      "locked": {
-        "lastModified": 1787433788,
-        "narHash": "sha256-K5CvpoRQqkqd35EAUbEZb2OzqifJHi4q6f47/t45n7k=",
-        "owner": "zombiemaker",
-        "repo": "nix-zm_go",
-        "rev": "eff96572963e83e7d39c1ecef58a466b17fd808f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "zombiemaker",
-        "repo": "nix-zm_go",
-        "type": "github"
-      }
-    },
     "zm_opencode_repo": {
       "inputs": {
-        "nixpkgs": "nixpkgs_3"
+        "nixpkgs": "nixpkgs_2"
       },
       "locked": {
         "lastModified": 1792003647,
@@ -110,7 +75,7 @@
     },
     "zm_pixi_repo": {
       "inputs": {
-        "nixpkgs": "nixpkgs_4"
+        "nixpkgs": "nixpkgs_3"
       },
       "locked": {
         "lastModified": 1785349236,

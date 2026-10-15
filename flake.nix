@@ -4,7 +4,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     zm_pixi_repo.url = "github:zombiemaker/nix-zm_pixi";
-    zm_go_repo.url = "github:zombiemaker/nix-zm_go";
     zm_opencode_repo.url = "github:zombiemaker/nix-zm_opencode";
   };
 
@@ -12,7 +11,6 @@
     self, 
     nixpkgs, 
     zm_pixi_repo,
-    zm_go_repo,
     zm_opencode_repo
   }:
 
@@ -20,20 +18,19 @@
     system = "x86_64-linux";
     pkgs = import nixpkgs { inherit system; };
     zm_pixi = zm_pixi_repo.v0_75_0.machine_code.x86_64.linux.musl_libc;
-    zm_go = zm_go_repo.v1_27_0.machine_code.x86_64.linux.gnu_libc;    
     
-    agentToolsOs = [
+    agentTools_os = [
       pkgs.binutils # readelf
       pkgs.coreutils
       pkgs.file
     ];
 
-    agentToolsOsProcessSystem = [
+    agentTools_osSystem_processes = [
       pkgs.procps
       pkgs.strace
     ];
 
-    agentToolsOsNetworkSystem = [
+    agentTools_osSystem_networks = [
       pkgs.dig
       pkgs.iputils
       pkgs.net-tools
@@ -41,37 +38,29 @@
       pkgs.strace
     ];
 
-    agentToolsOsFileSystem = [
+    agentTools_osSystem_files = [
       pkgs.fd
       pkgs.lsof
       pkgs.tree
       pkgs.which
     ];
 
-    agentToolsOsSecuritySystem = [
+    agentTools_osSystem_security = [
       pkgs.bubblewrap
       pkgs.cacert
       pkgs.gnutls
       pkgs.openssl
     ];
 
-    agentToolsHttp = [
-      pkgs.curl
-      pkgs.wget
-    ];
 
-    agentToolsGit = [
-      pkgs.git
-      pkgs.delta
-    ];
-
-    agentToolsText = [
+    agentTools_data_text = [
       pkgs.ast-grep
       pkgs.bat
       pkgs.ctags
       pkgs.gawk
       pkgs.gnugrep
       pkgs.gnused
+      pkgs.neovim
       pkgs.jq
       pkgs.ripgrep
       pkgs.tree-sitter
@@ -79,16 +68,16 @@
       pkgs.yq
     ];
 
-    agentToolsImage = [
+    agentTools_data_image = [
       pkgs.graphiz
       pkgs.imagemagick
     ];
 
-    agentToolsAudio = [
+    agentTools_data_audio = [
       pkgs.ffmpeg
     ];
 
-    agentToolsEnvPackages = [
+    agentTools_data_packages = [
       pkgs.gnutar
       pkgs.mamba-cpp
       pkgs.micromamba
@@ -96,29 +85,43 @@
       zm_pixi
     ];
 
-    agentToolsDataStore = [
+    agentTools_http = [
+      pkgs.curl
+      pkgs.wget
+    ];
+
+    agentTools_data_git = [
+      pkgs.git
+      pkgs.delta
+    ];
+
+    agentTools_data_store = [
       pkgs.duckdb
       pkgs.sqlite
       pkgs.ladybugdb
       # rocksdb?
     ];
 
-    agentToolsShellTask = [
+    agentTools_machine_task = [
       pkgs.gnumake
     ];
 
-    agentToolsNats = [
+    ###############################
+    # Messaging Agent Tools
+    ###############################
+
+    agentTools_nats = [
       pkgs.natscli
       pkgs.nats-kafka
       pkgs.nats-server
       pkgs.nats-top
     ];
 
-    agentToolsApacheKafka = [
+    agentTools_apacheKafka = [
       pkgs.apacheKafka
     ];
 
-    agentToolsZenoh = [
+    agentTools_eclipseZenoh = [
       pkgs.zenoh
       pkgs.zenoh-backend-rocksdb
       pkgs.zenoh-backend-influxdb
@@ -138,97 +141,170 @@
       # zm_zenoh_flat # https://github.com/eclipse-zenoh/zenoh-flat
     ];
 
-
-
     ###############################
     # Code Stack Agent Tools
     ###############################
-    agentToolsCodeStackC = [
+    agentTools_codeStack_c = [
       pkgs.clang_22
       pkgs.clang-tools
       pkgs.cmake
       pkgs.gcc
       pkgs.ninja
     ];
-    agentToolsCodeStackCpp = [
+
+    agentTools_codeStack_cpp = [
       pkgs.clang_22
       pkgs.clang-tools
       pkgs.cmake
       pkgs.gcc
       pkgs.ninja
     ];
-    agentToolsCodeStackDotNetCSharp = [
+
+    agentTools_codeStack_csharp_10_dotnet = [
+      pkgs.dotnet-runtime_10
+      pkgs.dotnet-sdk_10
+      pkgs.omnisharp-roslyn
       pkgs.nuget
     ];
-    agentToolsCodeStackGnuBash = [
+
+    agentTools_codeStack_csharp_mono = [
+      pkgs.mono
+      pkgs.nuget
+    ];
+
+    agentTools_codeStack_csharp_blazorServer = [
+    ];
+
+    agentTools_codeStack_csharp_blazorWasm = [
+    ];
+
+    agentTools_codeStack_gnuBash = [
       pkgs.bashInteractive
       pkgs.shellcheck
     ];
-    agentToolsCodeStackElixer = [];
-    agentToolsCodeStackGo = [
+
+    agentTools_codeStack_elixer = [];
+
+    agentTools_codeStack_go_1_27_standard = [
+      pkgs.go_1_27
+      pkgs.gopls
+      pkgs.go-tools
+      pkgs.gotools
+    ];
+
+    agentTools_codeStack_go_1_27_tinygo = [
       pkgs.tinygo
-      zm_go
+      pkgs.gopls
+      pkgs.go-tools
+      pkgs.gotools
     ];
-    agentToolsCodeStackHtmlCss = [];
-    agentToolsCodeStackJava = [
-      pkgs.maven
+
+    agentTools_codeStack_html_css = [];
+
+    agentTools_codeStack_java_25_corretto  = [
+      # pkgs.corretto25
+      pkgs.javaPackages.compiler.corretto25
     ];
-    agentToolsCodeStackJavaScript = [];
-    agentToolsCodeStackJavaScriptBun = [];
-    agentToolsCodeStackJavaScriptDeno = [];
-    agentToolsCodeStackJavaScriptNodejs = [
+
+    agentTools_codeStack_java_25_eclipseTemurin  = [
+      # pkgs.temurin-bin-25
+      # pkgs.temurin-jre-bin-25
+      pkgs.javaPackages.compiler.temurin-bin.jdk-25
+    ];
+
+    agentTools_codeStack_javaScript = [];
+
+    agentTools_codeStack_javaScript_bun = [];
+
+    agentTools_codeStack_javaScript_deno = [];
+
+    agentTools_codeStack_javaScript_nodejs = [
       pkgs.nodejs
     ];
-    agentToolsCodeStackJavaScriptWebBrowser = [];
-    agentToolsCodeStackLua = [];
-    agentToolsCodeStackMojo = [
+
+    agentTools_codeStack_javaScript_webBrowser = [];
+
+    agentTools_codeStack_lua_luaJit = [
+      pkgs.luajit
+    ];
+
+    agentTools_codeStack_mojo = [
       zm_pixi
     ];
-    agentToolsCodeStackPowerShell = [
+    
+    agentTools_codeStack_powershell = [
       pkgs.powershell
+      pkgs.powershell-editor-services
+      pkgs.tree-sitter
+      pkgs.tree-sitter-grammars.tree-sitter-powershell
     ];
-    agentToolsCodeStackPython = [
+
+    agentTools_codeStack_python_3_14_cpython = [
       pkgs.python314
       pkgs.python314Packages.pip
       pkgs.uv
       pkgs.ruff
       zm_pixi
     ];
-    agentToolsCodeStackR = [];
-    agentToolsCodeStackRuby = [];
-    agentToolsCodeStackRust = [];
-    agentToolsCodeStackWasm = [
+
+    agentTools_codeStack_python_3_11_pypy = [
+      pkgs.pypy311
+    ];
+
+    agentTools_codeStack_r = [];
+
+    agentTools_codeStack_ruby = [];
+
+    agentTools_codeStack_rust = [
+      pkgs.rustup
+      pkgs.rust-bindgen # generates Rust FFI code to C libraries
+      pkgs.rust-cbindgen # generates C bindings from Rust code
+    ];
+
+    agentTools_codeStack_typescript = [];
+
+    agentTools_codeStack_typescript_deno = [];
+
+    agentTools_codeStack_typescript_nodejs = [];
+
+    agentTools_codeStack_wasm = [
       pkgs.wasm-tools
     ];
-    agentToolsCodeStackWasmWasi = [
+
+    agentTools_codeStack_wasm_wasi = [
       pkgs.wit-bindgen
       pkgs.wasmtime
       pkgs.wasmer
       pkgs.wkg
     ];
-    agentToolsCodeStackWasmWebBrowser = [];
+
+    agentTools_codeStack_wasm_webBrowser = [];
     
     ###############################
 
     
 
     # ACTION: Select derivations groups to make available to AI agent harness
-    agentToolsSelected = agentToolsOs ++
-      agentToolsOsProcessSystem ++
-      agentToolsOsFileSystem ++
-      agentToolsOsNetworkSystem ++
-      agentToolsOsSecuritySystem ++
-      agentToolsShellTask ++
-      agentToolsHttp ++
-      agentToolsGit ++
-      agentToolsText ++
-      agentToolsCodeStackGnuBash ++ 
-      agentToolsCodeStackPowerShell ++
-      agentToolsCodeStackC ++
-      agentToolsCodeStackGo ++
-      agentToolsCodeStackPython ++
-      agentToolsCodeStackWasm ++
-      agentToolsCodeStackWasmWasi;
+    agentTools_Selected = agentTools_os ++
+      agentTools_osSystem_processes ++
+      agentTools_osSystem_files ++
+      agentTools_osSystem_networks ++
+      agentTools_osSystem_security ++
+      agentTools_machine_task ++
+      agentTools_http ++
+      agentTools_data_git ++
+      agentTools_data_text ++
+      agentTools_data_packages ++
+      agentTools_codeStack_gnuBash ++ 
+      agentTools_codeStack_powershell ++
+      agentTools_codeStack_c ++
+      agentTools_codeStack_csharp_10_dotnet ++
+      agentTools_codeStack_go_1_27_standard ++
+      agentTools_codeStack_html_css ++
+      agentTools_codeStack_python_3_11_pypy ++
+      agentTools_codeStack_rust ++
+      agentTools_codeStack_wasm ++
+      agentTools_codeStack_wasm_wasi;
 
     ###############################################################################
     # NixOS-Native Linux ELF
@@ -236,10 +312,10 @@
     zm_opencode_linux_nixos = zm_opencode_repo.v2_0_26.machine_code.x86_64.linux_nixos.gnu_libc;
 
     # Define the collection of tool derivations the AI Agent is allowed to use
-    agentToolsLinuxNixOs = agentToolsSelected ++
+    agentTools_LinuxNixOs = agentTools_Selected ++
       [ zm_opencode_linux_nixos ];
 
-    agentClosureLinuxNixOs = pkgs.closureInfo { rootPaths = agentToolsLinuxNixOs; };
+    agentClosureLinuxNixOs = pkgs.closureInfo { rootPaths = agentTools_LinuxNixOs; };
 
     # Build a GNU Bash script that provisions the bwrap layers and spawns an interactive containerized bash
     bwrapShellWrapperLinuxNixOs = pkgs.writeShellScriptBin "containerized-agent-linux_nixos" ''
@@ -327,7 +403,7 @@
       BWRAP_ARGS+=(--symlink "${pkgs.bashInteractive}/bin/bash" /bin/sh)
 
       # Set a clear prompt indicator and ensure the tools are injected into the agent's PATH
-      CONTAINER_PATH="${pkgs.lib.makeBinPath agentToolsLinuxNixOs}:/bin"
+      CONTAINER_PATH="${pkgs.lib.makeBinPath agentTools_LinuxNixOs}:/bin"
       BWRAP_ARGS+=(--setenv PATH "''${CONTAINER_PATH}")
 
       # DEBUG printing PATH
@@ -362,11 +438,11 @@
   zm_opencode_linux = zm_opencode_repo.v2_0_26.machine_code.x86_64.linux.gnu_libc;
   
   # Define the collection of tool derivations the AI Agent is allowed to use
-  agentToolsLinux = agentToolsSelected ++
+  agentTools_Linux = agentTools_Selected ++
     [ zm_opencode_linux ];
 
   # Create a closure path containing the store paths of ALL dependencies
-  agentClosureLinux = pkgs.closureInfo { rootPaths = agentToolsLinux; };
+  agentClosureLinux = pkgs.closureInfo { rootPaths = agentTools_Linux; };
 
   # Build a GNU Bash script that provisions the bwrap layers and spawns an interactive containerized bash
   bwrapShellWrapperLinux = pkgs.writeShellScriptBin "containerized-agent-linux" ''
@@ -454,7 +530,7 @@
     BWRAP_ARGS+=(--symlink "${pkgs.bashInteractive}/bin/bash" /bin/sh)
 
     # Set a clear prompt indicator and ensure the tools are injected into the agent's PATH
-    CONTAINER_PATH="${pkgs.lib.makeBinPath agentToolsLinux}:/bin"
+    CONTAINER_PATH="${pkgs.lib.makeBinPath agentTools_Linux}:/bin"
     BWRAP_ARGS+=(--setenv PATH "''${CONTAINER_PATH}")
 
     # DEBUG printing PATH
