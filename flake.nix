@@ -23,48 +23,60 @@
     zm_go = zm_go_repo.v1_27_0.machine_code.x86_64.linux.gnu_libc;    
     
     agentToolsOs = [
-      pkgs.which
       pkgs.binutils # readelf
       pkgs.coreutils
-      pkgs.iputils
-      pkgs.procps
-      pkgs.net-tools
-      pkgs.dig
-      pkgs.strace
-      pkgs.lsof
       pkgs.file
     ];
 
-    agentToolsFileSystem = [];
+    agentToolsOsProcessSystem = [
+      pkgs.procps
+      pkgs.strace
+    ];
 
-    agentToolsSecurity = [
+    agentToolsOsNetworkSystem = [
+      pkgs.dig
+      pkgs.iputils
+      pkgs.net-tools
+      pkgs.procps
+      pkgs.strace
+    ];
+
+    agentToolsOsFileSystem = [
+      pkgs.fd
+      pkgs.lsof
+      pkgs.tree
+      pkgs.which
+    ];
+
+    agentToolsOsSecuritySystem = [
+      pkgs.bubblewrap
       pkgs.cacert
       pkgs.gnutls
       pkgs.openssl
-      pkgs.bubblewrap
     ];
 
-    agentToolsClients = [
-      pkgs.wget
+    agentToolsHttp = [
       pkgs.curl
+      pkgs.wget
+    ];
+
+    agentToolsGit = [
       pkgs.git
+      pkgs.delta
     ];
 
     agentToolsText = [
-      pkgs.gnugrep
       pkgs.ast-grep
-      pkgs.ripgrep
-      pkgs.jq
-      pkgs.yq
-      pkgs.xmlstarlet
-      pkgs.tree-sitter
+      pkgs.bat
       pkgs.ctags
       pkgs.gawk
+      pkgs.gnugrep
       pkgs.gnused
-      pkgs.fd
-      pkgs.bat
-      pkgs.delta
-      pkgs.tree
+      pkgs.jq
+      pkgs.ripgrep
+      pkgs.tree-sitter
+      pkgs.xmlstarlet
+      pkgs.yq
     ];
 
     agentToolsImage = [
@@ -77,9 +89,9 @@
     ];
 
     agentToolsEnvPackages = [
+      pkgs.gnutar
       pkgs.mamba-cpp
       pkgs.micromamba
-      pkgs.gnutar
       pkgs.nuget
       zm_pixi
     ];
@@ -95,58 +107,86 @@
       pkgs.gnumake
     ];
 
+    agentToolsNats = [
+      pkgs.natscli
+      pkgs.nats-kafka
+      pkgs.nats-server
+      pkgs.nats-top
+    ];
+
+    agentToolsApacheKafka = [
+      pkgs.apacheKafka
+    ];
+
+    agentToolsZenoh = [
+      pkgs.zenoh
+      pkgs.zenoh-backend-rocksdb
+      pkgs.zenoh-backend-influxdb
+      pkgs.zenoh-backend-filesystem
+      pkgs.zenoh-plugin-mqtt
+      pkgs.zenoh-plugin-webserver
+      pkgs.zenoh-plugin-dds
+      pkgs.zenoh-c
+      pkgs.zenoh-cpp
+      # zm_zenoh_backend_sql # https://github.com/eclipse-zenoh/zenoh-backend-sql
+      # zm_zenoh_backend_s3 # https://github.com/eclipse-zenoh/zenoh-backend-s3
+      # zm_zenoh_go # https://github.com/eclipse-zenoh/zenoh-go
+      # zm_zenoh_python # https://github.com/eclipse-zenoh/zenoh-python
+      # zm_zenoh_ts # https://github.com/eclipse-zenoh/zenoh-ts
+      # zm_zenoh_java # https://github.com/eclipse-zenoh/zenoh-java
+      # zm_zenoh_csharp # https://github.com/eclipse-zenoh/zenoh-csharp
+      # zm_zenoh_flat # https://github.com/eclipse-zenoh/zenoh-flat
+    ];
+
+
+
+    ###############################
+    # Code Stack Agent Tools
+    ###############################
+    agentToolsCodeStackC = [
+      pkgs.clang_22
+      pkgs.clang-tools
+      pkgs.cmake
+      pkgs.gcc
+      pkgs.ninja
+    ];
+    agentToolsCodeStackCpp = [
+      pkgs.clang_22
+      pkgs.clang-tools
+      pkgs.cmake
+      pkgs.gcc
+      pkgs.ninja
+    ];
+    agentToolsCodeStackDotNetCSharp = [
+      pkgs.nuget
+    ];
     agentToolsCodeStackGnuBash = [
       pkgs.bashInteractive
       pkgs.shellcheck
     ];
-
-    agentToolsCodeStackPowerShell = [
-      pkgs.powershell
-    ];
-
-    agentToolsCodeStackC = [
-      pkgs.cmake
-      pkgs.gcc
-      pkgs.clang_22
-      pkgs.clang-tools
-    ];
-
-    agentToolsCodeStackCpp = [
-      pkgs.cmake
-      pkgs.gcc
-      pkgs.clang_22
-      pkgs.clang-tools
-    ];
-
-    agentToolsCodeStackRust = [];
-
-    agentToolsCodeStackMojo = [
-      zm_pixi
-    ];
-
+    agentToolsCodeStackElixer = [];
     agentToolsCodeStackGo = [
       pkgs.tinygo
       zm_go
     ];
-
+    agentToolsCodeStackHtmlCss = [];
     agentToolsCodeStackJava = [
       pkgs.maven
     ];
-
-    agentToolsCodeStackDotNetCSharp = [
-      pkgs.nuget
-    ];
-
     agentToolsCodeStackJavaScript = [];
-
-    agentToolsCodeStackJavaScriptWebBrowser = [];
-    
+    agentToolsCodeStackJavaScriptBun = [];
+    agentToolsCodeStackJavaScriptDeno = [];
     agentToolsCodeStackJavaScriptNodejs = [
       pkgs.nodejs
     ];
-
-    agentToolsCodeStackJavaScriptDeno = [];
-    agentToolsCodeStackJavaScriptBun = [];
+    agentToolsCodeStackJavaScriptWebBrowser = [];
+    agentToolsCodeStackLua = [];
+    agentToolsCodeStackMojo = [
+      zm_pixi
+    ];
+    agentToolsCodeStackPowerShell = [
+      pkgs.powershell
+    ];
     agentToolsCodeStackPython = [
       pkgs.python314
       pkgs.python314Packages.pip
@@ -154,36 +194,41 @@
       pkgs.ruff
       zm_pixi
     ];
-
     agentToolsCodeStackR = [];
     agentToolsCodeStackRuby = [];
-    agentToolsCodeStackLua = [];
-    agentToolsCodeStackElixer = [];
-    
+    agentToolsCodeStackRust = [];
     agentToolsCodeStackWasm = [
       pkgs.wasm-tools
     ];
-
-    agentToolsCodeStackWasmWebBrowser = [];
-    
     agentToolsCodeStackWasmWasi = [
       pkgs.wit-bindgen
       pkgs.wasmtime
       pkgs.wasmer
       pkgs.wkg
     ];
+    agentToolsCodeStackWasmWebBrowser = [];
+    
+    ###############################
+
+    
 
     # ACTION: Select derivations groups to make available to AI agent harness
     agentToolsSelected = agentToolsOs ++
+      agentToolsOsProcessSystem ++
+      agentToolsOsFileSystem ++
+      agentToolsOsNetworkSystem ++
+      agentToolsOsSecuritySystem ++
       agentToolsShellTask ++
-      agentToolsSecurity ++
-      agentToolsClients ++
+      agentToolsHttp ++
+      agentToolsGit ++
       agentToolsText ++
       agentToolsCodeStackGnuBash ++ 
       agentToolsCodeStackPowerShell ++
       agentToolsCodeStackC ++
       agentToolsCodeStackGo ++
-      agentToolsCodeStackPython;
+      agentToolsCodeStackPython ++
+      agentToolsCodeStackWasm ++
+      agentToolsCodeStackWasmWasi;
 
     ###############################################################################
     # NixOS-Native Linux ELF
