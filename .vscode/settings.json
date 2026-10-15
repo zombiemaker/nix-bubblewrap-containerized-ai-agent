@@ -22,7 +22,7 @@
                 "TEMPDIR": "${workspaceFolder}/.temp",
                 "TMP": "${workspaceFolder}/.temp",
                 "TMPDIR": "${workspaceFolder}/.temp",
-                "PATH": "${workspaceFolder}/.apps/bin:${workspaceFolder}/.apps/go/bin:${env:PATH}",
+                "PATH": "${workspaceFolder}/.apps/bin:${workspaceFolder}/.apps/go/bin:${workspaceFolder}/process/code/gnu_bash:${workspaceFolder}/process/code/powershell/scripts:${workspaceFolder}/product/code/powershell/scripts:${env:PATH}",
             }
         },
         "Workspace PowerShell": {
@@ -41,11 +41,12 @@
                 "GOPATH": "${workspaceFolder}/.apps/go",
                 "GOBIN": "${workspaceFolder}/.apps/go/bin",
                 "GOTMPDIR": "${workspaceFolder}/.temp",
+                "PSModulePath": "${workspaceFolder}/process/code/powershell/modules:${workspaceFolder}/product/code/powershell/modules:${env:PSModulePath}",
                 "TEMP": "${workspaceFolder}/.temp",
                 "TEMPDIR": "${workspaceFolder}/.temp",
                 "TMP": "${workspaceFolder}/.temp",
                 "TMPDIR": "${workspaceFolder}/.temp",
-                "PATH": "${workspaceFolder}/.apps/bin:${workspaceFolder}/.apps/go/bin:${env:PATH}",
+                "PATH": "${workspaceFolder}/.apps/bin:${workspaceFolder}/.apps/go/bin:${workspaceFolder}/process/code/gnu_bash:${workspaceFolder}/process/code/powershell/scripts:${env:PATH}",
             }
         },
     },

@@ -198,6 +198,47 @@
 
     # Build a GNU Bash script that provisions the bwrap layers and spawns an interactive containerized bash
     bwrapShellWrapperLinuxNixOs = pkgs.writeShellScriptBin "containerized-agent-linux_nixos" ''
+      set -eo pipefail
+
+      # Default values
+      MODE="server"
+      DEBUG=false
+
+      # Display usage helper
+      usage() {
+        cat <<EOF
+      Usage: $(basename "$0") [OPTIONS]
+
+      Options:
+        --mode MODE            "server" (default) or "shell"
+        --debug                Prints debug messages
+        --help                 Display this help message
+      EOF
+        exit 0
+      }
+
+      # Parse named parameters
+      while [[ $# -gt 0 ]]; do
+        case "$1" in
+          --mode)
+            MODE="''${2,,}"
+            shift 2
+            ;;
+          --debug)
+            DEBUG=true
+            ;;
+          --help)
+            usage
+            ;;
+          *)
+            echo "Error: Unknown argument '$1'" >&2
+            echo "Use --help for usage details." >&2
+            exit 1
+            ;;
+        esac
+      done
+
+
       # Evaluate the list and bakes a standard space-separated Bash array definition right here
       mapfile -t NIX_STORE_PATHS < "${agentClosureLinuxNixOs}/store-paths"
 
@@ -245,21 +286,28 @@
       BWRAP_ARGS+=(--setenv PATH "''${CONTAINER_PATH}")
 
       # DEBUG printing PATH
-      printf "CONTAINER_PATH env var paths:\n"
-      printf "\t%b\n" "''${CONTAINER_PATH//:/\\n\\t}"
+      [ "$DEBUG" = "true" ] && printf "CONTAINER_PATH env var paths:\n"
+      [ "$DEBUG" = "true" ] && printf "\t%b\n" "''${CONTAINER_PATH//:/\\n\\t}"
 
       # Shell prompt
       CONTAINER_PS1="\[\e[0;36m\][🤖 container]\[\e[38;5;200m\]\w\n\[\e[0;33m\]\$ "
       BWRAP_ARGS+=(--setenv PS1 "''${CONTAINER_PS1}")
 
       # DEBUG printing bwrap args
-      echo "BWRAP_ARGS = "
-      printf "\t%s\n" "''${BWRAP_ARGS[@]}"
+      [ "$DEBUG" = "true" ] && echo "BWRAP_ARGS = "
+      [ "$DEBUG" = "true" ] && printf "\t%s\n" "''${BWRAP_ARGS[@]}"
 
-      # Spawn Bubblewrap and enter an interactive shell inside the sandbox
-      # NOTE: Evaluated directly by Nix for bwrap, and escaped with ''' for the Bash array expansion
-      echo "🛡️  Starting Bubblewrap container"
-      ${pkgs.bubblewrap}/bin/bwrap "''${BWRAP_ARGS[@]}" "''${TARGET_BIN_BWRAP_ARGS[@]}" "${pkgs.bashInteractive}/bin/bash"
+      if [[ "$MODE" == "server" ]]; then
+        echo "🚀 Launching application"
+        echo "📦 Starting Bubblewrap container"
+        ${pkgs.bubblewrap}/bin/bwrap "''${BWRAP_ARGS[@]}" "''${TARGET_BIN_BWRAP_ARGS[@]}" opencode serve
+      elif [[ "$MODE" == "shell" ]]; then
+        echo "🚀 Launching shell"
+        echo "📦 Starting Bubblewrap container"
+        ${pkgs.bubblewrap}/bin/bwrap "''${BWRAP_ARGS[@]}" "''${TARGET_BIN_BWRAP_ARGS[@]}" "${pkgs.bashInteractive}/bin/bash"
+      else
+        echo "Unexpected MODE '$MODE'"
+      fi
     '';
 
   
@@ -277,6 +325,47 @@
 
   # Build a GNU Bash script that provisions the bwrap layers and spawns an interactive containerized bash
   bwrapShellWrapperLinux = pkgs.writeShellScriptBin "containerized-agent-linux" ''
+    set -eo pipefail
+
+    # Default values
+    MODE="server"
+    DEBUG=false
+
+    # Display usage helper
+    usage() {
+      cat <<EOF
+    Usage: $(basename "$0") [OPTIONS]
+
+    Options:
+      --mode MODE            "server" (default) or "shell"
+      --debug                Prints debug messages
+      --help                 Display this help message
+    EOF
+      exit 0
+    }
+
+    # Parse named parameters
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        --mode)
+          MODE="''${2,,}"
+          shift 2
+          ;;
+        --debug)
+          DEBUG=true
+          ;;
+        --help)
+          usage
+          ;;
+        *)
+          echo "Error: Unknown argument '$1'" >&2
+          echo "Use --help for usage details." >&2
+          exit 1
+          ;;
+      esac
+    done
+
+    
     # Evaluate the list and bakes a standard space-separated Bash array definition right here
     mapfile -t NIX_STORE_PATHS < "${agentClosureLinux}/store-paths"
 
@@ -324,8 +413,8 @@
     BWRAP_ARGS+=(--setenv PATH "''${CONTAINER_PATH}")
 
     # DEBUG printing PATH
-    printf "CONTAINER_PATH env var paths:\n"
-    printf "\t%b\n" "''${CONTAINER_PATH//:/\\n\\t}"
+    [ "$DEBUG" = "true" ] && printf "CONTAINER_PATH env var paths:\n"
+    [ "$DEBUG" = "true" ] && printf "\t%b\n" "''${CONTAINER_PATH//:/\\n\\t}"
 
     # Shell prompt
     CONTAINER_PS1="\[\e[0;36m\][🤖 container]\[\e[38;5;200m\]\w\n\[\e[0;33m\]\$ "
@@ -341,17 +430,23 @@
       sort -u)  
 
     LINKER_STORE_PATH=$(readlink -f /lib64/ld-linux-x86-64.so.2 | grep -o '/nix/store/[^/]*')
-    echo "LINKER_STORE_PATH = $LINKER_STORE_PATH"
+
+    # DEBUG printing bwrap args
+    [ "$DEBUG" = "true" ] && echo "LINKER_STORE_PATH = $LINKER_STORE_PATH"
+
     TARGET_BIN_NIX_STORE_PATHS+=("''${LINKER_STORE_PATH}")
 
     TARGET_BIN_BWRAP_ARGS=()
     for path in ''${TARGET_BIN_NIX_STORE_PATHS[@]}; do
-      echo "TARGET_BIN_NIX_STORE_PATHS item: $path"
+      # DEBUG printing bwrap args
+      [ "$DEBUG" = "true" ] && echo "TARGET_BIN_NIX_STORE_PATHS item: $path"
+
       TARGET_BIN_BWRAP_ARGS+=("--ro-bind" "$path" "$path")
     done
 
     if [ -n "''${NIX_LD:-}" ]; then
-      echo "NIX_LD is pointing to: $NIX_LD"
+      # DEBUG printing bwrap args
+      [ "$DEBUG" = "true" ] && echo "NIX_LD is pointing to: $NIX_LD"
       
       # Extract the parent Nix store directory of the fallback linker
       NIX_LD_DIR=$(readlink "$NIX_LD" | grep -o '/nix/store/[^/]*')
@@ -374,44 +469,74 @@
     TARGET_BIN_BWRAP_ARGS+=("--ro-bind" "/lib64" "/lib64")
     TARGET_BIN_BWRAP_ARGS+=("--setenv" "LD_LIBRARY_PATH" "''${LD_LIBRARY_PATH}")
 
-    echo "TARGET_BIN_BWRAP_ARGS = "
-    printf "\t%s\n" "''${TARGET_BIN_BWRAP_ARGS[@]}"
+    # DEBUG printing bwrap args
+    [ "$DEBUG" = "true" ] && echo "TARGET_BIN_BWRAP_ARGS = "
+    [ "$DEBUG" = "true" ] && printf "\t%s\n" "''${TARGET_BIN_BWRAP_ARGS[@]}"
 
     ############################################################################
 
     # DEBUG printing bwrap args
-    echo "BWRAP_ARGS = "
-    printf "\t%s\n" "''${BWRAP_ARGS[@]}"
+    [ "$DEBUG" = "true" ] && echo "BWRAP_ARGS = "
+    [ "$DEBUG" = "true" ] && printf "\t%s\n" "''${BWRAP_ARGS[@]}"
 
-    # Spawn Bubblewrap and enter an interactive shell inside the sandbox
-    # NOTE: Evaluated directly by Nix for bwrap, and escaped with ''' for the Bash array expansion
-    echo "🛡️  Starting Bubblewrap container"
-    ${pkgs.bubblewrap}/bin/bwrap "''${BWRAP_ARGS[@]}" "''${TARGET_BIN_BWRAP_ARGS[@]}" "${pkgs.bashInteractive}/bin/bash"
+    if [[ "$MODE" == "server" ]]; then
+      echo "🚀 Launching application
+      echo "📦 Starting Bubblewrap container"
+      ${pkgs.bubblewrap}/bin/bwrap "''${BWRAP_ARGS[@]}" "''${TARGET_BIN_BWRAP_ARGS[@]}" opencode serve
+    elif [[ "$MODE" == "shell" ]]; then
+      echo "🚀 Launching shell"
+      echo "📦 Starting Bubblewrap container"
+      ${pkgs.bubblewrap}/bin/bwrap "''${BWRAP_ARGS[@]}" "''${TARGET_BIN_BWRAP_ARGS[@]}" "${pkgs.bashInteractive}/bin/bash"
+    else
+      echo "Unexpected MODE '$MODE'"
+    fi
   '';
 
   in {
-    devShells.x86_64 = {
-      linux_nixos = pkgs.mkShell {
-        name = "containerized-opencode-linux_nixos";
-        
-        # This script runs instantly upon invoking `nix develop`
-        shellHook = ''
-          echo "📦 Initializing isolated AI workspace..."
-          exec ${bwrapShellWrapperLinuxNixOs}/bin/containerized-agent-linux_nixos
-        '';
-      };
+    v0_1_0 = {
+      shells = {
+        x86_64 = {
+          linux_nixos = {
+            shell = pkgs.mkShell {
+              name = "containerized-opencode-linux_nixos-shell";
+              shellHook = ''
+                echo "🔐 Initializing isolated AI workspace..."
+                exec ${bwrapShellWrapperLinuxNixOs}/bin/containerized-agent-linux_nixos --mode shell
+              '';
+            };
 
-      linux = pkgs.mkShell {
-        name = "containerized-opencode-linux";
-        
-        # This script runs instantly upon invoking `nix develop`
-        shellHook = ''
-          echo "📦 Initializing isolated AI workspace..."
-          exec ${bwrapShellWrapperLinux}/bin/containerized-agent-linux
-        '';
-      };
+            server = pkgs.mkShell {
+              name = "containerized-opencode-linux_nixos-server";
+              shellHook = ''
+                echo "🔐 Initializing isolated AI workspace..."
+                exec ${bwrapShellWrapperLinuxNixOs}/bin/containerized-agent-linux_nixos --mode server
+              '';
+            };
+          };
 
-      default = self.devShells.x86_64.linux_nixos;
+          linux = pkgs.mkShell {
+            shell = pkgs.mkShell {
+              name = "containerized-opencode-linux-shell";
+              shellHook = ''
+                echo "🔐 Initializing isolated AI workspace..."
+                exec ${bwrapShellWrapperLinux}/bin/containerized-agent-linux --mode shell
+              '';
+            };
+
+            server = pkgs.mkShell {
+              name = "containerized-opencode-linux-server";
+              shellHook = ''
+                echo "🔐 Initializing isolated AI workspace..."
+                exec ${bwrapShellWrapperLinux}/bin/containerized-agent-linux --mode server
+              '';
+            };
+          };
+
+          default = self.v0_1_0.shells.x86_64.linux_nixos;
+        };
+      };
     };
+
+    latest = self.v0_1_0;
   };
 }

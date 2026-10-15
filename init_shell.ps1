@@ -51,13 +51,12 @@ $message = @"
 Which Nix shell environment:
 
 0 = None
-1 = pwsh_pixi_go
-2 = pwsh_pixi_mojo
-3 = pwsh_llvm_clang
-4 = pwsh_pixi_cpython
-5 = pwsh_rust_toolchain
+1 = latest.shells.x86_64.linux_nixos.shell
+2 = latest.shells.x86_64.linux_nixos.server
+3 = latest.shells.x86_64.linux.shell
+4 = latest.shells.x86_64.linux.server
 "@
-$options = (0, 1, 2, 3, 4, 5)
+$options = (0, 1, 2, 3, 4)
 $default = 0 # Default to 'Yes' (index 0) if the user hits Enter
 
 # Display the prompt and capture the choice index (0 for Yes, 1 for No)
@@ -70,30 +69,22 @@ switch ($choice) {
     }
 
     1 {
-        Write-Host "Starting Nix shell environment pwsh_pixi_go" -ForegroundColor Green
-        nix develop .#latest.shells.x86_64.linux.gnu_libc.pwsh_pixi_go
-        $env:GOPATH = "$env:VSC_WORKSPACE_DIR_PATH/.apps/go"
-        $env:GOBIN = "$env:VSC_WORKSPACE_DIR_PATH/.apps/go/bin"
-        $env:GOTMPDIR = "$env:VSC_WORKSPACE_DIR_PATH/.temp"
+        Write-Host "Starting Nix shell environment latest.shells.x86_64.linux_nixos.shell" -ForegroundColor Green
+        nix develop .#latest.shells.x86_64.linux_nixos.shell
     }
 
     2 {
-        Write-Host "Starting Nix shell environment pwsh_pixi_mojo" -ForegroundColor Green
-        nix develop .#latest.shells.x86_64.linux.gnu_libc.pwsh_pixi_mojo
+        Write-Host "Starting Nix shell environment latest.shells.x86_64.linux_nixos.server" -ForegroundColor Green
+        nix develop .#latest.shells.x86_64.linux_nixos.server
     }
 
     3 {
-        Write-Host "Starting Nix shell environment pwsh_llvm_clang" -ForegroundColor Green
-        nix develop .#latest.shells.x86_64.linux.gnu_libc.pwsh_llvm_clang
+        Write-Host "Starting Nix shell environment latest.shells.x86_64.linux.shell" -ForegroundColor Green
+        nix develop .#latest.shells.x86_64.linux.shell
     }
 
     4 {
-        Write-Host "Starting Nix shell environment pwsh_pixi_cpython" -ForegroundColor Green
-        nix develop .#latest.shells.x86_64.linux.gnu_libc.pwsh_pixi_cpython
-    }
-
-    5 {
-        Write-Host "Starting Nix shell environment pwsh_rust_toolchain" -ForegroundColor Green
-        nix develop .#latest.shells.x86_64.linux.gnu_libc.pwsh_rust_toolchain
+        Write-Host "Starting Nix shell environment latest.shells.x86_64.linux.server" -ForegroundColor Green
+        nix develop .#latest.shells.x86_64.linux.server
     }
 }
